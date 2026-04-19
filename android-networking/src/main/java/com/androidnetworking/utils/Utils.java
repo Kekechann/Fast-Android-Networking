@@ -39,6 +39,8 @@ import java.net.URLConnection;
 import okhttp3.Cache;
 import okhttp3.Response;
 import okio.Okio;
+import okio.BufferedSink;
+import okio.Source;
 
 /**
  * Created by amitshekhar on 25/03/16.
@@ -171,32 +173,34 @@ public class Utils {
 
     public static void saveFile(Response response, String dirPath,
                                 String fileName) throws IOException {
-        InputStream is = null;
-        byte[] buf = new byte[2048];
-        int len;
-        FileOutputStream fos = null;
+        File dir = new File(dirPath);
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+        File file = new File(dir, fileName);
+        BufferedSink sink = null;
+        Source source = null;
         try {
-            is = response.body().byteStream();
-            File dir = new File(dirPath);
-            if (!dir.exists()) {
-                dir.mkdirs();
-            }
-            File file = new File(dir, fileName);
-            fos = new FileOutputStream(file);
-            while ((len = is.read(buf)) != -1) {
-                fos.write(buf, 0, len);
-            }
-            fos.flush();
+            source = response.body().source();
+            sink = Okio.buffer(Okio.sink(file));
+            // ⚡ Bolt Optimization: Use Okio's writeAll for efficient file writing.
+            // This avoids a manual 2KB buffer loop and leverages Okio's segment pooling
+            // and native I/O for faster file downloads.
+            sink.writeAll(source);
         } finally {
-            try {
-                if (is != null) is.close();
-            } catch (IOException e) {
-                e.printStackTrace();
+            if (source != null) {
+                try {
+                    source.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
-            try {
-                if (fos != null) fos.close();
-            } catch (IOException e) {
-                e.printStackTrace();
+            if (sink != null) {
+                try {
+                    sink.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
