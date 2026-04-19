@@ -17,4 +17,5 @@
 
 <resources>
     <string name="app_name">RxSampleApp</string>
+    <string name="image_content_desc">Loaded network image</string>
 </resources>

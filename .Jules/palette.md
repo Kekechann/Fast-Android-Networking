@@ -1,0 +1,3 @@
+## 2024-05-15 - Android Accessibility Content Descriptions
+**Learning:** Added `android:contentDescription` to missing `ImageView` components across the `app`, `rxsampleapp` and `rx2sampleapp` modules. This ensures screen readers announce the purpose of images, significantly improving accessibility.
+**Action:** Always verify `ImageView` and similar graphic UI components have a proper `android:contentDescription` string resource associated with them in Android development to maintain accessible interfaces.
