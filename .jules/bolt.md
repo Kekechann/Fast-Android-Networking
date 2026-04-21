@@ -1,3 +1,6 @@
 ## 2024-05-24 - Okio vs Manual FileOutputStream in Android
 **Learning:** When downloading files in Android apps that use OkHttp, reading the response stream into a `FileOutputStream` with a manual byte array buffer (e.g., 2KB) is significantly slower than using Okio. OkHttp already exposes an Okio `BufferedSource`. By wrapping the destination `File` in an Okio `BufferedSink` and calling `sink.writeAll(source)`, the app leverages Okio's segment pooling and native I/O optimizations, avoiding manual buffer allocation and extra array copying.
 **Action:** Whenever handling `Response.body().byteStream()` or `source()` from OkHttp, always prefer Okio's `writeAll` over manual `InputStream` loops for file operations.
+## 2024-05-24 - Bitmap Memory Optimization in Networking Libraries
+**Learning:** Fully buffering an OkHttp response body to a `byte[]` just to decode a `Bitmap` doubles the memory overhead, risking `OutOfMemoryError`s for large images. Using `BitmapFactory.decodeStream` directly on `response.body().byteStream()` is much more memory-efficient when the image's dimensions don't require pre-calculating bounds and downsampling.
+**Action:** When a raw, unscaled `Bitmap` is needed (`maxWidth == 0 && maxHeight == 0`), decode directly from the stream. Only buffer to a `byte[]` when two passes are required (one for bounds, one for actual downsampling).
