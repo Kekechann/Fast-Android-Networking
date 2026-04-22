@@ -37,6 +37,10 @@ import okhttp3.ResponseBody;
  */
 public final class JacksonParserFactory extends Parser.Factory {
 
+    private static final TypeReference<HashMap<String, String>> STRING_MAP_TYPE_REF =
+            new TypeReference<HashMap<String, String>>() {
+            };
+
     private final ObjectMapper mapper;
 
     public JacksonParserFactory() {
@@ -87,11 +91,8 @@ public final class JacksonParserFactory extends Parser.Factory {
     @Override
     public HashMap<String, String> getStringMap(Object object) {
         try {
-            TypeReference<HashMap<String, String>> typeRef
-                    = new TypeReference<HashMap<String, String>>() {
-            };
             ObjectWriter objectWriter = mapper.writerFor(object.getClass());
-            return mapper.readValue(objectWriter.writeValueAsString(object), typeRef);
+            return mapper.readValue(objectWriter.writeValueAsString(object), STRING_MAP_TYPE_REF);
         } catch (Exception e) {
             e.printStackTrace();
         }
