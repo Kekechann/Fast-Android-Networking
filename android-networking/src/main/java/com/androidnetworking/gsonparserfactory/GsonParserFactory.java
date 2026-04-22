@@ -35,6 +35,9 @@ import okhttp3.ResponseBody;
  */
 public final class GsonParserFactory extends Parser.Factory {
 
+    private static final Type STRING_MAP_TYPE = new TypeToken<HashMap<String, String>>() {
+    }.getType();
+
     private final Gson gson;
 
     public GsonParserFactory() {
@@ -80,9 +83,7 @@ public final class GsonParserFactory extends Parser.Factory {
     @Override
     public HashMap<String, String> getStringMap(Object object) {
         try {
-            Type type = new TypeToken<HashMap<String, String>>() {
-            }.getType();
-            return gson.fromJson(gson.toJson(object), type);
+            return gson.fromJson(gson.toJson(object), STRING_MAP_TYPE);
         } catch (Exception e) {
             e.printStackTrace();
         }
