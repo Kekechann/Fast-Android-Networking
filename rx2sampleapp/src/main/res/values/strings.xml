@@ -19,4 +19,5 @@
 
 <resources>
     <string name="app_name">Rx2SampleApp</string>
+    <string name="image_description">Loaded image</string>
 </resources>
