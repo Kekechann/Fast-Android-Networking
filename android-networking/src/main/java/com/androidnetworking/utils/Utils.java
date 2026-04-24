@@ -75,17 +75,19 @@ public class Utils {
                                                   int maxHeight, Bitmap.Config decodeConfig,
                                                   BitmapFactory.Options decodeOptions,
                                                   ImageView.ScaleType scaleType) {
-        byte[] data = new byte[0];
-        try {
-            data = Okio.buffer(response.body().source()).readByteArray();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
         Bitmap bitmap = null;
         if (maxWidth == 0 && maxHeight == 0) {
             decodeOptions.inPreferredConfig = decodeConfig;
-            bitmap = BitmapFactory.decodeByteArray(data, 0, data.length, decodeOptions);
+            // ⚡ Bolt Optimization: Decode directly from InputStream to avoid loading the entire
+            // image into a byte[] first. This saves memory and reduces GC overhead.
+            bitmap = BitmapFactory.decodeStream(response.body().byteStream(), null, decodeOptions);
         } else {
+            byte[] data = new byte[0];
+            try {
+                data = Okio.buffer(response.body().source()).readByteArray();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             decodeOptions.inJustDecodeBounds = true;
             BitmapFactory.decodeByteArray(data, 0, data.length, decodeOptions);
             int actualWidth = decodeOptions.outWidth;
