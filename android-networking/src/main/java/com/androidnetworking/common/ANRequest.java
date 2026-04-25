@@ -85,6 +85,7 @@ public class ANRequest<T extends ANRequest> {
     private Priority mPriority;
     private int mRequestType;
     private String mUrl;
+    private String formattedUrl;
     private int sequenceNumber;
     private Object mTag;
     private ResponseType mResponseType;
@@ -405,6 +406,9 @@ public class ANRequest<T extends ANRequest> {
     }
 
     public String getUrl() {
+        if (formattedUrl != null) {
+            return formattedUrl;
+        }
         String tempUrl = mUrl;
         for (HashMap.Entry<String, String> entry : mPathParameterMap.entrySet()) {
             tempUrl = tempUrl.replace("{" + entry.getKey() + "}", String.valueOf(entry.getValue()));
@@ -422,7 +426,8 @@ public class ANRequest<T extends ANRequest> {
                 }
             }
         }
-        return urlBuilder.build().toString();
+        formattedUrl = urlBuilder.build().toString();
+        return formattedUrl;
     }
 
     public int getSequenceNumber() {
