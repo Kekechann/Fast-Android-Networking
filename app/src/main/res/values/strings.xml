@@ -17,4 +17,5 @@
 
 <resources>
     <string name="app_name">AndroidNetworking</string>
+    <string name="image_content_description">Downloaded image</string>
 </resources>
